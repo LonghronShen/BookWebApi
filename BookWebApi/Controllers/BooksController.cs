@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BookWebApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookWebApi.Controllers
 {
 
+    [Authorize]
     [Route("api/book")]
     public class BooksController
         : Controller
@@ -35,7 +37,7 @@ namespace BookWebApi.Controllers
             }
         }
 
-        [HttpGet("filter:query?title={title}&author={author}&publisher={publisher}&startIndex={startIndex}&count={count}")]
+        [HttpGet("filter:query")]
         public async Task<IActionResult> Get(string title, string author, string publisher, int startIndex, int count)
         {
             var query = this._dbContext.Books.AsNoTracking();
