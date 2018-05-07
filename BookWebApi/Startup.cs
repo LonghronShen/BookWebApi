@@ -19,6 +19,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace BookWebApi
 {
@@ -80,6 +81,11 @@ namespace BookWebApi
                     .Build();
                 config.Filters.Add(new AuthorizeFilter(policy));
             });
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "Book API", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -99,6 +105,25 @@ namespace BookWebApi
                 routes.MapRoute(
                      name: "default",
                      template: "{controller=Book}/{action=Index}/{id?}");
+            });
+
+            app.UseCors(builder =>
+              builder.AllowAnyOrigin()
+                  .AllowAnyHeader()
+          );
+
+            app.UseSwagger(options =>
+            {
+                options.PreSerializeFilters.Add((document, request) =>
+                {
+                    document.Host = request.Host.Value;
+                });
+            });
+
+            // Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Book API V1");
             });
         }
 
