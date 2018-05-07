@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BookWebApi.Controllers
 {
 
-    [Authorize]
+    [Authorize()]
     [Route("api/book")]
     public class BooksController
         : Controller
