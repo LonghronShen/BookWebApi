@@ -24,109 +24,122 @@ using Swashbuckle.AspNetCore.Swagger;
 namespace BookWebApi
 {
 
-    public class Startup
-    {
+	public class Startup
+	{
 
-        public IConfiguration Configuration { get; }
+		public IConfiguration Configuration { get; }
 
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+		public string UserName { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services
-                .AddEntityFrameworkNpgsql()
-                .AddDbContext<BookDbContext>(options =>
-                {
-                    options.UseNpgsql(this.Configuration["ConnectionStrings:PostgreSQL"]);
-                }, ServiceLifetime.Scoped);
+		public string Password { get; }
 
-            services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
-               .AddBasic(options =>
-               {
-                   options.AllowInsecureProtocol = true;
-                   options.Realm = "idunno";
-                   options.Events = new BasicAuthenticationEvents
-                   {
-                       OnValidateCredentials = context =>
-                       {
-                           //if (context.Username == "user" && context.Password == "mypass")
-                           if (context.Username == context.Password)
-                           {
-                               var claims = new[]
-                               {
-                                    new Claim(ClaimTypes.NameIdentifier, context.Username, ClaimValueTypes.String, context.Options.ClaimsIssuer),
-                                    new Claim(ClaimTypes.Name, context.Username, ClaimValueTypes.String, context.Options.ClaimsIssuer)
-                               };
-                               context.Principal = new ClaimsPrincipal(new ClaimsIdentity(claims, context.Scheme.Name));
-                               context.Success();
-                           }
-                           return Task.CompletedTask;
-                       }
-                   };
-               });
+		public Startup(IConfiguration configuration)
+		{
+			this.Configuration = configuration;
+			this.UserName = this.Configuration["Auth:UserName"];
+			this.Password = this.Configuration["Auth:Password"];
+		}
 
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("AlwaysFail", policy => policy.Requirements.Add(new AlwaysFailRequirement()));
-            });
+		// This method gets called by the runtime. Use this method to add services to the container.
+		public void ConfigureServices(IServiceCollection services)
+		{
+			services
+				.AddEntityFrameworkNpgsql()
+				.AddDbContext<BookDbContext>(options =>
+				{
+					var connectionString = this.Configuration.GetConnectionString("PostgreSQL");
+					if (!string.IsNullOrEmpty(connectionString))
+					{
+						options.UseNpgsql(connectionString);
+					}
+					else
+					{
+						options.UseInMemoryDatabase("Book");
+					}
+				}, ServiceLifetime.Scoped);
 
-            services.AddMvc(config =>
-            {
-                var policy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build();
-                config.Filters.Add(new AuthorizeFilter(policy));
-            });
+			services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
+			   .AddBasic(options =>
+			   {
+				   options.AllowInsecureProtocol = true;
+				   options.Realm = "idunno";
+				   options.Events = new BasicAuthenticationEvents
+				   {
+					   OnValidateCredentials = context =>
+					   {
+						   if (context.Username == this.UserName && context.Password == this.Password)
+						   {
+							   var claims = new[]
+							   {
+									new Claim(ClaimTypes.NameIdentifier, context.Username, ClaimValueTypes.String, context.Options.ClaimsIssuer),
+									new Claim(ClaimTypes.Name, context.Username, ClaimValueTypes.String, context.Options.ClaimsIssuer)
+							   };
+							   context.Principal = new ClaimsPrincipal(new ClaimsIdentity(claims, context.Scheme.Name));
+							   context.Success();
+						   }
+						   return Task.CompletedTask;
+					   }
+				   };
+			   });
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Info { Title = "Book API", Version = "v1" });
-            });
-        }
+			services.AddAuthorization(options =>
+			{
+				options.AddPolicy("AlwaysFail", policy => policy.Requirements.Add(new AlwaysFailRequirement()));
+			});
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+			services.AddMvc(config =>
+			{
+				var policy = new AuthorizationPolicyBuilder()
+					.RequireAuthenticatedUser()
+					.Build();
+				config.Filters.Add(new AuthorizeFilter(policy));
+			});
 
-            app.UseAuthentication();
+			services.AddSwaggerGen(c =>
+			{
+				c.SwaggerDoc("v1", new Info { Title = "Book API", Version = "v1" });
+			});
+		}
 
-            app.UseStatusCodePages();
+		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+		{
+			if (env.IsDevelopment())
+			{
+				app.UseDeveloperExceptionPage();
+			}
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                     name: "default",
-                     template: "{controller=Book}/{action=Index}/{id?}");
-            });
+			app.UseAuthentication();
 
-            app.UseCors(builder =>
-              builder.AllowAnyOrigin()
-                  .AllowAnyHeader()
-          );
+			app.UseStatusCodePages();
 
-            app.UseSwagger(options =>
-            {
-                options.PreSerializeFilters.Add((document, request) =>
-                {
-                    document.Host = request.Host.Value;
-                });
-            });
+			app.UseMvc(routes =>
+			{
+				routes.MapRoute(
+					 name: "default",
+					 template: "{controller=Home}/{action=Index}/{id?}");
+			});
 
-            // Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Book API V1");
-            });
-        }
+			app.UseCors(builder =>
+			  builder.AllowAnyOrigin()
+				  .AllowAnyHeader()
+		  );
 
-    }
+			app.UseSwagger(options =>
+			{
+				options.PreSerializeFilters.Add((document, request) =>
+				{
+					document.Host = request.Host.Value;
+				});
+			});
+
+			// Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
+			app.UseSwaggerUI(c =>
+			{
+				c.SwaggerEndpoint("/swagger/v1/swagger.json", "Book API V1");
+			});
+		}
+
+	}
 
 }
