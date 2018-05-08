@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  bookwebapi:
+    image: ${DOCKER_REGISTRY}bookwebapi
+    build:
+      context: .
+      dockerfile: BookWebApi/Dockerfile
