@@ -131,7 +131,15 @@ namespace BookWebApi.Controllers
             if (item != null)
             {
                 this._dbContext.Books.Remove(item);
-                return this.Json(item);
+				var r = await this._dbContext.SaveChangesAsync();
+				if (r > 0)
+				{
+					return this.Json(item);
+				}
+				else
+				{
+					return this.StatusCode(500);
+				}
             }
             else
             {
