@@ -1,25 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using BookWebApi.Models;
+﻿using BookWebApi.Models;
 using BookWebApi.Utilities;
 using idunno.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Swagger;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace BookWebApi
 {
@@ -120,10 +111,7 @@ namespace BookWebApi
 					 template: "{controller=Home}/{action=Index}/{id?}");
 			});
 
-			app.UseCors(builder =>
-			  builder.AllowAnyOrigin()
-				  .AllowAnyHeader()
-		  );
+			app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader());
 
 			app.UseSwagger(options =>
 			{
