@@ -24,9 +24,15 @@ namespace BookWebApi
 
 		public string Password { get; }
 
-		public Startup(IConfiguration configuration)
+		public Startup(IHostingEnvironment env)
 		{
-			this.Configuration = configuration;
+			var builder = new ConfigurationBuilder()
+				.SetBasePath(env.ContentRootPath)
+				.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+				.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+				.AddEnvironmentVariables();
+
+			this.Configuration = builder.Build();
 			this.UserName = this.Configuration["Auth:UserName"];
 			this.Password = this.Configuration["Auth:Password"];
 		}
