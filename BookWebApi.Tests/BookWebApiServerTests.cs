@@ -12,6 +12,7 @@ using Xunit;
 namespace BookWebApi.Tests
 {
 
+	[TestCaseOrderer("BookWebApi.Tests.PriorityOrderer", "BookWebApi.Tests")]
 	public class BookWebApiServerTests
 		: IClassFixture<TestFixture<BookWebApi.Startup>>
 	{
@@ -46,7 +47,25 @@ namespace BookWebApi.Tests
 			};
 		}
 
-		[Fact]
+		[Fact, TestPriority(0)]
+		public void BookEqualsTest()
+		{
+			Assert.Equal(new Book()
+			{
+				Id = 1,
+				Title = "CLR via C#",
+				Author = "Jeffrey Richter",
+				Publisher = "Microsoft Press"
+			}, new Book()
+			{
+				Id = 1,
+				Title = "CLR via C#",
+				Author = "Jeffrey Richter",
+				Publisher = "Microsoft Press"
+			});
+		}
+
+		[Fact, TestPriority(1)]
 		public async Task ReturnUnauthorizedWhenStart()
 		{
 			// Act
@@ -57,7 +76,7 @@ namespace BookWebApi.Tests
 			Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
 		}
 
-		[Fact]
+		[Fact, TestPriority(2)]
 		public async Task ReturnNotFoundWhenAuthenticated()
 		{
 			// Act
@@ -69,7 +88,7 @@ namespace BookWebApi.Tests
 			Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
 		}
 
-		[Fact]
+		[Fact, TestPriority(3)]
 		public async Task Return1WhenBookAdded()
 		{
 			// Act
@@ -84,25 +103,20 @@ namespace BookWebApi.Tests
 			Assert.Equal("1", responseContent);
 		}
 
-		[Fact]
+		[Fact, TestPriority(4)]
 		public async Task ReturnOkWhenBookDeleted()
 		{
 			// Act
 			this._client.DefaultRequestHeaders.Authorization = this._authenticationHeaderValue;
-
-			var response = await this._client.PostAsync("/api/book",
-				new StringContent(JsonConvert.SerializeObject(this.Books[0]), Encoding.UTF8, "application/json"));
+			var response = await this._client.DeleteAsync("/api/book/1");
 
 			// Assert
 			response = response.EnsureSuccessStatusCode();
 			var responseContent = await response.Content.ReadAsStringAsync();
-			Assert.Equal("1", responseContent);
-
-			response = await this._client.DeleteAsync("/api/book/1");
-			Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+			Assert.Equal(JsonConvert.SerializeObject(this.Books[0]), responseContent);
 		}
 
-		[Fact]
+		[Fact, TestPriority(5)]
 		public async Task ReturnOkWhenPutBook()
 		{
 			// Act
@@ -112,15 +126,14 @@ namespace BookWebApi.Tests
 				new StringContent(JsonConvert.SerializeObject(this.Books[0]), Encoding.UTF8, "application/json"));
 
 			// Assert
-			response = response.EnsureSuccessStatusCode();
+			response.EnsureSuccessStatusCode();
 			var responseContent = await response.Content.ReadAsStringAsync();
-			Assert.Equal("1", responseContent);
 
-			response = await this._client.PutAsync("/api/book/1",
+			response = await this._client.PutAsync($"/api/book/{responseContent}",
 				new StringContent(JsonConvert.SerializeObject(this.Books[1]), Encoding.UTF8, "application/json"));
 			Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-			response = await this._client.GetAsync("/api/book/1");
+			response = await this._client.GetAsync($"/api/book/{responseContent}");
 			response = response.EnsureSuccessStatusCode();
 			responseContent = await response.Content.ReadAsStringAsync();
 			var item = JsonConvert.DeserializeObject<Book>(responseContent);
