@@ -6,20 +6,23 @@ using BookWebApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace BookWebApi.Controllers
 {
 
-    [Authorize()]
+    [Authorize]
     [Route("api/book")]
     public class BooksController
         : Controller
     {
 
         private readonly BookDbContext _dbContext;
+        private readonly ILogger _logger;
 
-        public BooksController(BookDbContext dbContext)
+        public BooksController(ILogger<BooksController> logger, BookDbContext dbContext)
         {
+            this._logger = logger;
             this._dbContext = dbContext;
         }
 
@@ -62,14 +65,7 @@ namespace BookWebApi.Controllers
                 query = query.Take(startIndex);
             }
             var result = await query.ToListAsync();
-            if (result.Count > 0)
-            {
-                return this.Json(result);
-            }
-            else
-            {
-                return this.NotFound();
-            }
+            return this.Json(result?.Count > 0 ? result : new List<Book>());
         }
 
         [HttpGet("{id}")]
@@ -80,10 +76,7 @@ namespace BookWebApi.Controllers
             {
                 return this.Json(item);
             }
-            else
-            {
-                return this.NotFound();
-            }
+            return this.NotFound();
         }
 
         [HttpPost]
@@ -91,13 +84,18 @@ namespace BookWebApi.Controllers
         {
             model.Id = 0;
             var book = await this._dbContext.Books.AddAsync(model);
-            var r = await this._dbContext.SaveChangesAsync();
-            if (r > 0)
+            try
             {
-                return this.Json(book.Entity.Id);
+                var r = await this._dbContext.SaveChangesAsync();
+                if (r > 0)
+                {
+                    return this.Json(book.Entity.Id);
+                }
+                return this.StatusCode(500);
             }
-            else
+            catch (Exception ex)
             {
+                this._logger.LogInformation(ex.Message + Environment.NewLine + ex.StackTrace);
                 return this.StatusCode(500);
             }
         }
@@ -113,15 +111,19 @@ namespace BookWebApi.Controllers
             item.Title = model.Title;
             item.Author = model.Author;
             item.Publisher = model.Publisher;
-            var r = await this._dbContext.SaveChangesAsync();
-            if (r > 0)
+            try
             {
-                return this.Json(item);
+                var r = await this._dbContext.SaveChangesAsync();
+                if (r > 0)
+                {
+                    return this.Json(item);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return this.StatusCode(500);
+                this._logger.LogInformation(ex.Message + Environment.NewLine + ex.StackTrace);
             }
+            return this.StatusCode(500);
         }
 
         [HttpDelete("{id}")]
@@ -131,15 +133,19 @@ namespace BookWebApi.Controllers
             if (item != null)
             {
                 this._dbContext.Books.Remove(item);
-				var r = await this._dbContext.SaveChangesAsync();
-				if (r > 0)
-				{
-					return this.Json(item);
-				}
-				else
-				{
-					return this.StatusCode(500);
-				}
+                try
+                {
+                    var r = await this._dbContext.SaveChangesAsync();
+                    if (r > 0)
+                    {
+                        return this.Json(item);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    this._logger.LogInformation(ex.Message + Environment.NewLine + ex.StackTrace);
+                }
+                return this.StatusCode(500);
             }
             else
             {
