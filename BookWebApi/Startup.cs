@@ -1,4 +1,6 @@
-﻿using BookWebApi.Models;
+﻿//#define USE_PostgreSQL
+
+using BookWebApi.Models;
 using BookWebApi.Utilities;
 using idunno.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -44,13 +46,21 @@ namespace BookWebApi
 				.AddEntityFrameworkNpgsql()
 				.AddDbContext<BookDbContext>(options =>
 				{
-					var connectionString = this.Configuration.GetConnectionString("PostgreSQL");
+#if USE_PostgreSQL
+                    var connectionString = this.Configuration.GetConnectionString("PostgreSQL");
 					if (!string.IsNullOrEmpty(connectionString))
 					{
 						options.UseNpgsql(connectionString);
 					}
-					else
+#else
+                    var connectionString = this.Configuration.GetConnectionString("MySql");
+					if (!string.IsNullOrEmpty(connectionString))
 					{
+						options.UseMySql(connectionString);
+					}
+#endif
+                    else
+                    {
 						options.UseInMemoryDatabase("Book");
 					}
 				}, ServiceLifetime.Scoped);
