@@ -30,40 +30,19 @@ namespace BookWebApi.Tests
 
 			this.Books = new List<Book>()
 			{
-				new Book()
-				{
-					Id = 1,
-					Title = "CLR via C#",
-					Author = "Jeffrey Richter",
-					Publisher = "Microsoft Press"
-				},
-				new Book()
-				{
-					Id = 2,
-					Title = "C How to Program",
-					Author = "Paul Deitel, Harvey Deitel",
-					Publisher = "Pearson International"
-				}
+                new Book("CLR via C#", "Jeffrey Richter", "Microsoft Press"),
+                new Book("C How to Program", "Paul Deitel, Harvey Deitel",  "Pearson International")
 			};
 		}
 
 		[Fact, TestPriority(0)]
 		public void BookEqualsTest()
 		{
-			Assert.Equal(new Book()
-			{
-				Id = 1,
-				Title = "CLR via C#",
-				Author = "Jeffrey Richter",
-				Publisher = "Microsoft Press"
-			}, new Book()
-			{
-				Id = 1,
-				Title = "CLR via C#",
-				Author = "Jeffrey Richter",
-				Publisher = "Microsoft Press"
-			});
-		}
+            Assert.Equal(
+                new Book("CLR via C#", "Jeffrey Richter", "Microsoft Press"), 
+                new Book("CLR via C#", "Jeffrey Richter", "Microsoft Press")
+            );
+        }
 
 		[Fact, TestPriority(1)]
 		public async Task ReturnUnauthorizedWhenStart()

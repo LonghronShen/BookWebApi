@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace BookWebApi.Models
 {
@@ -25,7 +26,10 @@ namespace BookWebApi.Models
             modelBuilder.Entity<Book>(c =>
             {
                 c.HasKey(x => x.Id);
-                c.Property(x => x.Id).UseNpgsqlSerialColumn();
+                c.Property(x => x.Id).ValueGeneratedOnAdd()
+                    .UseMySqlIdentityColumn()
+                    .UseNpgsqlSerialColumn();
+                c.Property(x => x.CreationTime).Metadata.AfterSaveBehavior = PropertySaveBehavior.Ignore;
             });
             base.OnModelCreating(modelBuilder);
         }

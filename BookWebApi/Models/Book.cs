@@ -24,6 +24,21 @@ namespace BookWebApi.Models
 		[JsonProperty("publisher")]
 		public string Publisher { get; set; }
 
+        [JsonProperty("creationTime")]
+        public DateTime CreationTime { get; set; }
+
+        private Book()
+        {
+            this.CreationTime = DateTime.Now;
+        }
+
+        public Book(string title, string author, string publisher)
+            : this()
+        {
+            this.Title = title;
+            this.Author = author;
+        }
+
 		public override bool Equals(object obj)
 		{
 			var other = obj as Book;

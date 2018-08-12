@@ -1,4 +1,4 @@
-﻿//#define USE_PostgreSQL
+﻿#define USE_PostgreSQL
 
 using BookWebApi.Models;
 using BookWebApi.Utilities;

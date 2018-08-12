@@ -5,9 +5,7 @@ VisualStudioVersion = 15.0.27625.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookWebApi", "BookWebApi\BookWebApi.csproj", "{E5024800-0D5A-4BD8-9835-A2BB19C8F90D}"
 EndProject
-Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{48217BEB-A75D-45C0-A408-FC04A5899AE9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookWebApi.Tests", "BookWebApi.Tests\BookWebApi.Tests.csproj", "{76669DB6-6BE9-486A-A808-650D6A107E4F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookWebApi.Tests", "BookWebApi.Tests\BookWebApi.Tests.csproj", "{3E98AF2C-B70E-4D39-9381-BCD69B01B6A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,13 +17,10 @@ Global
 		{E5024800-0D5A-4BD8-9835-A2BB19C8F90D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E5024800-0D5A-4BD8-9835-A2BB19C8F90D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E5024800-0D5A-4BD8-9835-A2BB19C8F90D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{48217BEB-A75D-45C0-A408-FC04A5899AE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{48217BEB-A75D-45C0-A408-FC04A5899AE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{48217BEB-A75D-45C0-A408-FC04A5899AE9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{76669DB6-6BE9-486A-A808-650D6A107E4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{76669DB6-6BE9-486A-A808-650D6A107E4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{76669DB6-6BE9-486A-A808-650D6A107E4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{76669DB6-6BE9-486A-A808-650D6A107E4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E98AF2C-B70E-4D39-9381-BCD69B01B6A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E98AF2C-B70E-4D39-9381-BCD69B01B6A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E98AF2C-B70E-4D39-9381-BCD69B01B6A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E98AF2C-B70E-4D39-9381-BCD69B01B6A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
