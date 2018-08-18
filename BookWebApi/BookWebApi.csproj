@@ -6,11 +6,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>E:\WorkTemp\BookWebApi\BookWebApi\BookWebApi.xml</DocumentationFile>
+    <DocumentationFile>$(OutputDir)BookWebApi.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>E:\WorkTemp\BookWebApi\BookWebApi\BookWebApi.xml</DocumentationFile>
+    <DocumentationFile>$(OutputDir)BookWebApi.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
